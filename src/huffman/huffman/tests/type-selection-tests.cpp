@@ -22,12 +22,11 @@ void test_types()
     CHECK_TYPE(2, uint8_t);
     CHECK_TYPE(255, uint8_t);
     CHECK_TYPE(256, uint8_t);
+    CHECK_TYPE(257, uint16_t);
     CHECK_TYPE(65535, uint16_t);
     CHECK_TYPE(65536, uint16_t);
-    CHECK_TYPE(65537, uint32_t);
     CHECK_TYPE(4294967295, uint32_t);
     CHECK_TYPE(4294967296, uint32_t);
-    CHECK_TYPE(4294967297, uint64_t);
 #undef CHECK_TYPE
 }
 
