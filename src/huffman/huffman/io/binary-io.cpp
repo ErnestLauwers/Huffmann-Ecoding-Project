@@ -2,21 +2,27 @@
 #include <cstdint>
 
 namespace io {
-
-    u64 io::read_bits(unsigned nbits, io::InputStream& input)
+    uint64_t io::read_bits(unsigned nbits, io::InputStream& input) 
     {
-        u64 result = 0;
-        unsigned bits_read = 0;
-        while (bits_read < nbits) {
-            int bit = input.read();
-            if (bit == io::InputStream::Eof) {
-                bit = 0;
+        uint64_t bits = 0;
+        unsigned i; 
+        for (i = 0; i < nbits; i++) {
+            Datum datum = input.read();
+            int bit = (datum != 0);
+            bits = (bits << 1) | bit;
+            if (input.end_reached()) {
+                nbits = i + 1;
+                break;
             }
-            result = (result << 1) | bit;
-            bits_read++;
         }
-        result <<= (64 - nbits); // Shift the result to the left to fill unused bits with 0s
-        return result;
+        bits >>= (nbits - i - 1);
+        return bits;
     }
 
+    void io::write_bits(u64 value, unsigned nbits, io::OutputStream& output)
+    {
+        for (unsigned i = 0; i < nbits; i++) {
+            output.write((value >> (nbits - i - 1)) & 1);
+        }
+    }
 }

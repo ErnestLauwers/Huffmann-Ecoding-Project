@@ -45,6 +45,9 @@
     <ClInclude Include="io\binary-io.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="encoding\encoding.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="easylogging++.cc">
@@ -78,6 +81,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="io\binary-io.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tests\binary-io-tests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
