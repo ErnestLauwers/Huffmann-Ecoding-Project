@@ -35,6 +35,7 @@ namespace
 
 }
 
+
 EofEncodingImplementation* create_eof_implementation(u64 domain_size)
 {
 	return new EofEncodingImplementation(domain_size);
