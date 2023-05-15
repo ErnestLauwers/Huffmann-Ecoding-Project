@@ -1,9 +1,6 @@
-#ifndef BINARY_IO_H
-#define BINARY_IO_H
-#include "io/streams.h"
-#include <cstdlib>
-#include "io/memory-buffer.h"
-#include "io/files.h"
+#ifndef ENCODING_H
+#define ENCODING_H
+#include <io/memory-buffer.h>
 
 namespace encoding
 {
@@ -16,39 +13,44 @@ namespace encoding
         virtual void decode(io::InputStream& input, io::OutputStream& output) = 0;
     };
 
-    template <typename IN, typename OUT>
+    template <u64 IN, u64 OUT>
     class Encoding 
     {
     private:
-        std::unique_ptr<EncodingImplementation> implementation;
+        std::shared_ptr<EncodingImplementation> implementation;
     public:
-        Encoding(std::unique_ptr<EncodingImplementation> impl) : implementation(std::move(implementation)) {}
+        Encoding(std::shared_ptr<EncodingImplementation> impl) : implementation(impl) {}
 
-        std::unique_ptr<EncodingImplementation>& operator->() { return implementation; }
-        const std::unique_ptr<EncodingImplementation>& operator->() const { return implementation; }
+        std::shared_ptr<EncodingImplementation> operator->() { return implementation; }
+        const std::shared_ptr<EncodingImplementation> operator->() const { return implementation; }
 
-        void encode(const io::DataSource<IN>&source, const Encoding<IN, OUT>&encoding, const io::DataDestination<OUT>&destination)
-        {
-            static_assert(IN == encoding.input_domain_size());
-            static_assert(OUT == encoding.output_domain_size());
-
-            auto input_stream = source.create_input_stream();
-            auto output_stream = destination.create_output_stream();
-
-            encoding->encode(*input_stream, *output_stream);
-        }
-
-        void decode(const io::DataSource<OUT>& source, const Encoding<IN, OUT>& encoding, const io::DataDestination<IN>& destination)
-        {
-            static_assert(IN == encoding.input_size());
-            static_assert(OUT == encoding.output_size());
-
-            auto input_stream = source.create_input_stream();
-            auto output_stream = destination.create_output_stream();
-
-            encoding->decode(*input_stream, *output_stream);
-        }
+        constexpr u64 input_domain_size() const { return IN; }
+        constexpr u64 output_domain_size() const { return OUT; }
     };
+    
+    template<u64 IN, u64 OUT>
+    void encode(io::DataSource<IN> source, Encoding<IN, OUT> encoding,io::DataDestination<OUT> destination)
+    {
+        static_assert(IN == encoding.input_domain_size());
+        static_assert(OUT == encoding.output_domain_size());
+
+        auto input_stream = source->create_input_stream();
+        auto output_stream = destination->create_output_stream();
+
+        encoding->encode(*input_stream, *output_stream);
+    }
+
+    template<u64 IN, u64 OUT>
+    void decode(io::DataSource<IN> source, Encoding<OUT, IN> decoding, io::DataDestination<OUT> destination)
+    {
+        static_assert(IN == decoding.output_domain_size());
+        static_assert(OUT == decoding.input_domain_size());
+
+        auto input_stream = source->create_input_stream();
+        auto output_stream = destination->create_output_stream();
+
+        decoding->decode(*input_stream, *output_stream);
+    }
 }
 
 #endif
