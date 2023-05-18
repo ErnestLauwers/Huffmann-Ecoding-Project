@@ -10,8 +10,8 @@ namespace encoding
 	class EncodingCombinerImplementation : public encoding::EncodingImplementation
 	{
 	private:
-		Encoding<N1, N2> E1;
-		Encoding<N2, N3> E2;
+		const Encoding<N1, N2> E1;
+		const Encoding<N2, N3> E2;
 	public:
 		EncodingCombinerImplementation(Encoding<N1, N2> E12, Encoding<N2, N3> E22) : E1(E12), E2(E22) { }
 

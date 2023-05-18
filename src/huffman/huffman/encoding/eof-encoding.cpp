@@ -9,7 +9,7 @@ namespace
 	private:
 		const u64 domain_size;
 	public:
-		EofEncodingImplementation(u64 domain_size) : domain_size(domain_size) {}
+		EofEncodingImplementation(const u64 domain_size) : domain_size(domain_size) {}
 
 		void encode(io::InputStream& input, io::OutputStream& output) override
 		{
