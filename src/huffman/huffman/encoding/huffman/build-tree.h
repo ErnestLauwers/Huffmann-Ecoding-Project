@@ -1,6 +1,10 @@
 #ifndef BUILD_TREE_H
 #define BUILD_TREE_H
 
+#include "data/binary-tree.h"
+#include "data/frequency-table.h"
+#include "util.h"
+
 namespace encoding
 {
 	namespace huffman

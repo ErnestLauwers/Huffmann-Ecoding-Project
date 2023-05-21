@@ -2,40 +2,45 @@
 #include "data/binary-tree.h"
 #include "util.h"
 
-std::vector<std::vector<Datum>> build_codes(const data::Node<std::pair<Datum, unsigned long long int>>& tree)
+void helper_function(const data::Node<std::pair<Datum, u64>>& tree, std::vector<Datum> bits, std::vector<std::vector<Datum>>& codes)
 {
-    std::vector<std::vector<Datum>> codes;
-    std::vector<Datum> currentCode;
+	const data::Leaf<std::pair<Datum, u64>>* leaf = dynamic_cast<const data::Leaf<std::pair<Datum, u64>>*>(&tree);
+	if (leaf != nullptr)
+	{
+		codes.at(leaf->get_value().first) = bits;
+	}
 
-    std::function<void(const data::Node<std::pair<Datum, unsigned long long int>>&, const std::vector<Datum>&)> traverseTree =
-        [&](const data::Node<std::pair<Datum, unsigned long long int>>& node, const std::vector<Datum>& currentCode)
-    {
-        const auto* leaf = dynamic_cast<const data::Leaf<std::pair<Datum, unsigned long long int>>*>(&node);
-        if (leaf != nullptr)
-        {
-            Datum value = leaf->get_value().first;
-            codes[value] = currentCode;
-        }
-        else
-        {
-            const auto* branch = dynamic_cast<const data::Branch<std::pair<Datum, unsigned long long int>>*>(&node);
-            if (branch != nullptr)
-            {
-                std::vector<Datum> leftCode = currentCode;
-                leftCode.push_back(0);
-                traverseTree(branch->get_left_child(), leftCode);
+	else {
+		const data::Branch<std::pair<Datum, u64>>* branch = dynamic_cast<const data::Branch<std::pair<Datum, u64>>*>(&tree);
+		if (branch != nullptr)
+		{
+			std::vector<Datum> left = bits;
+			left.push_back(0);
 
-                std::vector<Datum> rightCode = currentCode;
-                rightCode.push_back(1);
-                traverseTree(branch->get_right_child(), rightCode);
-            }
-        }
-    };
 
-    constexpr Datum maxDatum = std::numeric_limits<Datum>::max();
-    codes.resize(maxDatum + 1);
+			std::vector<Datum> right = bits;
+			right.push_back(1);
 
-    traverseTree(tree, currentCode);
 
-    return codes;
+			helper_function(branch->get_left_child(), left, codes);
+			helper_function(branch->get_right_child(), right, codes);
+		}
+
+
+	}
+
+}
+
+
+
+
+
+std::unique_ptr<std::vector<std::vector<Datum>>> build_codes(const data::Node<std::pair<Datum, u64>>& tree, const u64 domain_size)
+{
+
+	auto codes = std::make_unique<std::vector<std::vector<Datum>>>(domain_size);
+	helper_function(tree, std::vector<Datum>(), *codes);
+	return std::move(codes);
+
+
 }
