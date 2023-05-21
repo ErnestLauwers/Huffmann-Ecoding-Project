@@ -7,7 +7,7 @@ Datum decode_single_datum(io::InputStream& input, const data::Node<Datum>& tree)
 {
     auto branch = dynamic_cast<const data::Branch<Datum>*>(&tree);
 
-    if (branch = nullptr) {
+    if (branch == nullptr) {
         auto leaf = static_cast<const data::Leaf<Datum>&> (tree);
         return leaf.get_value();
     }

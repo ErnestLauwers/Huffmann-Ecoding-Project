@@ -11,8 +11,6 @@ namespace encoding
 		void encode_tree(const data::Node<Datum>& root, unsigned bits, io::OutputStream& output);
 
 		std::unique_ptr<data::Node<Datum>> decode_tree(unsigned bits, io::InputStream& input);
-
-		bool equal(const data::Node<Datum>& a, const data::Node<Datum>& b);
 	}
 }
 

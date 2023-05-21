@@ -2,45 +2,28 @@
 #include "data/binary-tree.h"
 #include "util.h"
 
-void helper_function(const data::Node<std::pair<Datum, u64>>& tree, std::vector<Datum> bits, std::vector<std::vector<Datum>>& codes)
+std::unique_ptr<std::vector<std::vector<Datum>>> build_codes(const data::Node<std::pair<Datum, u64>>& tree, const u64 size)
 {
-	const data::Leaf<std::pair<Datum, u64>>* leaf = dynamic_cast<const data::Leaf<std::pair<Datum, u64>>*>(&tree);
-	if (leaf != nullptr)
-	{
-		codes.at(leaf->get_value().first) = bits;
-	}
+    std::vector<std::vector<Datum>> all_codes(size);
 
-	else {
-		const data::Branch<std::pair<Datum, u64>>* branch = dynamic_cast<const data::Branch<std::pair<Datum, u64>>*>(&tree);
-		if (branch != nullptr)
-		{
-			std::vector<Datum> left = bits;
-			left.push_back(0);
+    std::function<void(const data::Node<std::pair<Datum, u64>>&, std::vector<Datum>)> traverse = [&](const data::Node<std::pair<Datum, u64>>& node, std::vector<Datum> bits) {
+        if (const auto* leaf = dynamic_cast<const data::Leaf<std::pair<Datum, u64>>*>(&node))
+        {
+            all_codes[leaf->get_value().first] = bits;
+        }
+        else if (const auto* branch = dynamic_cast<const data::Branch<std::pair<Datum, u64>>*>(&node))
+        {
+            std::vector<Datum> left_bits = bits;
+            left_bits.push_back(0);
+            traverse(branch->get_left_child(), left_bits);
 
+            std::vector<Datum> right_bits = bits;
+            right_bits.push_back(1);
+            traverse(branch->get_right_child(), right_bits);
+        }
+    };
 
-			std::vector<Datum> right = bits;
-			right.push_back(1);
+    traverse(tree, {});
 
-
-			helper_function(branch->get_left_child(), left, codes);
-			helper_function(branch->get_right_child(), right, codes);
-		}
-
-
-	}
-
-}
-
-
-
-
-
-std::unique_ptr<std::vector<std::vector<Datum>>> build_codes(const data::Node<std::pair<Datum, u64>>& tree, const u64 domain_size)
-{
-
-	auto codes = std::make_unique<std::vector<std::vector<Datum>>>(domain_size);
-	helper_function(tree, std::vector<Datum>(), *codes);
-	return std::move(codes);
-
-
+    return std::make_unique<std::vector<std::vector<Datum>>>(std::move(all_codes));
 }
