@@ -8,33 +8,36 @@ namespace encoding
 {
 	namespace huffman
 	{
-		std::unique_ptr<data::Node<Datum>> decode_tree(unsigned bits, io::InputStream& input)
+		std::unique_ptr<data::Node<Datum>> decode_tree(Datum nbits, io::InputStream& inputStream)
 		{
-			if (input.read())
+			if (inputStream.read() == 0)
 			{
-				auto left_child = decode_tree(bits, input);
-				auto right_child = decode_tree(bits, input);
-				return std::make_unique<data::Branch<Datum>>(std::move(left_child), std::move(right_child));
+				Datum data = io::read_bits(nbits, inputStream);
+
+				return std::make_unique<data::Leaf<Datum>>(data);
 			}
 			else
 			{
-				auto read_bits = io::read_bits(bits, input);
-				return std::make_unique<data::Leaf<Datum>>(std::move(read_bits));
+				std::unique_ptr<data::Node<Datum>> leftNode = decode_tree(nbits, inputStream);
+				std::unique_ptr<data::Node<Datum>> rightNode = decode_tree(nbits, inputStream);
+				return std::make_unique<data::Branch<Datum>>(std::move(leftNode), std::move(rightNode));
 			}
 		}
 
-		void encode_tree(const data::Node<Datum>& root, unsigned bits, io::OutputStream& output)
+		void encode_tree(const data::Node<Datum>& root, Datum size, io::OutputStream& outputStream)
 		{
-			if (const auto branch = dynamic_cast<const data::Branch<Datum>*>(&root))
+			if (root.isLeaf())
 			{
-				io::write_bits(1, 1, output);
-				encode_tree(branch->get_left_child(), bits, output);
-				encode_tree(branch->get_right_child(), bits, output);
+				const data::Leaf<Datum>& leaf = dynamic_cast<const data::Leaf<Datum>&>(root);
+				outputStream.write(0);
+				io::write_bits(leaf.get_value(), size, outputStream);
 			}
-			else if (const auto leaf = dynamic_cast<const data::Leaf<Datum>*>(&root))
+			else
 			{
-				io::write_bits(0, 1, output);
-				io::write_bits(leaf->get_value(), bits, output);
+				outputStream.write(1);
+				auto& branch = static_cast<const data::Branch<Datum>&>(root);
+				encode_tree(branch.get_left_child(), size, outputStream);
+				encode_tree(branch.get_right_child(), size, outputStream);
 			}
 		}
 	}

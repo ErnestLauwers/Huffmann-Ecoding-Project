@@ -39,14 +39,14 @@ int main(int argc, char* argv[])
         auto input = io::create_file_data_source(input_file_path);
         auto output = io::create_file_data_destination(output_file_path);
 
-        auto eof_encoding = encoding::eof_encoding<256>();
-        auto huffman_encoding = encoding::huffman::huffman_encoding<257>();
-        auto bit_grouper = encoding::bit_grouper<8>();
+        const auto eof_encoding = encoding::eof_encoding<256>();
+        const auto huffman_encoding = encoding::huffman::huffman_encoding<257>();
+        const auto bit_grouper = encoding::bit_grouper<8>();
 
-        auto encoding = eof_encoding | huffman_encoding | bit_grouper;
+        const auto encoding = eof_encoding | huffman_encoding | bit_grouper;
 
-        auto input_stream = input->create_input_stream();
-        auto output_stream = output->create_output_stream();
+        const auto input_stream = input->create_input_stream();
+        const auto output_stream = output->create_output_stream();
 
         encoding->decode(*input_stream, *output_stream);
 
