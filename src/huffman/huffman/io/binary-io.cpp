@@ -1,24 +1,31 @@
 #include "io/binary-io.h"
 
-u64 io::read_bits(unsigned nbits, io::InputStream& input) {
-    u64 res = 0;
-    while (nbits != 0) {
+void io::write_bits(u64 value, unsigned bits, io::OutputStream& output) {
+    unsigned remaining_bits = bits;
+
+    while (remaining_bits > 0) {
+        u64 bit = (value >> (remaining_bits - 1)) & 1;
+
+        output.write(bit);
+
+        --remaining_bits;
+    }
+}
+
+u64 io::read_bits(unsigned bits, io::InputStream& input) {
+    u64 result = 0;
+
+    while (bits > 0) {
         if (!input.end_reached()) {
-            res |= (input.read() << (nbits - 1));
+            result <<= 1;
+
+            result |= input.read();
         }
         else {
-            res |= 0;
+            result <<= 1;
         }
-        --nbits;
-    }
-    return res;
-}
-void io::write_bits(u64 value, unsigned nbits, io::OutputStream& output) {
-    unsigned count = nbits;
 
-    while (nbits != 0) {
-        output.write((value >> (nbits - 1)) & 1);
-        --count;
-        --nbits;
+        --bits;
     }
+    return result;
 }

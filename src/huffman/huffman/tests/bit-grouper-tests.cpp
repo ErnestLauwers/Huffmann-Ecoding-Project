@@ -25,7 +25,7 @@ namespace
 
 TEST_CASE("Bit Grouper Tests")
 {
-	check_bit_grouper(0);
+	check_bit_grouper(3);
 }
 
 #endif

@@ -1,4 +1,4 @@
-/*#ifdef TEST_BUILD
+#ifdef TEST_BUILD
 
 #include "catch.hpp"
 #include "data/binary-tree.h"
@@ -52,7 +52,7 @@ namespace
         encoding::huffman::encode_tree(original_tree, 8, *output);
         auto decoded_tree = encoding::huffman::decode_tree(8, *input);
 
-        CHECK(!areTreesEqual(original_tree, *decoded_tree));
+        CHECK(areTreesEqual(original_tree, *decoded_tree));
     }
 }
 
@@ -61,4 +61,4 @@ TEST_CASE("Tree Encoding Tests")
     check_tree_encoding();
 }
 
-#endif*/
+#endif

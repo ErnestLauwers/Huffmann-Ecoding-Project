@@ -27,9 +27,9 @@ namespace encoding
 		{
 			io::MemoryBuffer<N2> memory_buffer;
 
-			E1->decode(in, *(memory_buffer.destination()->create_output_stream()));
+			E2->decode(in, *(memory_buffer.destination()->create_output_stream()));
 
-			E2->decode(*(memory_buffer.source()->create_input_stream()), out);
+			E1->decode(*(memory_buffer.source()->create_input_stream()), out);
 		}
 	};
 

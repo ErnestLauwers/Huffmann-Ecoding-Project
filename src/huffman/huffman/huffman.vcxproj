@@ -236,14 +236,12 @@
     <ClCompile Include="tests\binary-io-tests.cpp" />
     <ClCompile Include="tests\binary-tree-tests.cpp" />
     <ClCompile Include="tests\bit-grouper-tests.cpp" />
-    <ClCompile Include="tests\build-codes-tests.cpp" />
     <ClCompile Include="tests\build-tree-tests.cpp" />
     <ClCompile Include="tests\copy-to-vector-tests.cpp" />
     <ClCompile Include="tests\encoding-combiner-tests.cpp" />
     <ClCompile Include="tests\eof-encoding-tests.cpp" />
     <ClCompile Include="tests\example-tests.cpp" />
     <ClCompile Include="tests\frequency-table-tests.cpp" />
-    <ClCompile Include="tests\huffman-decoding-tests.cpp" />
     <ClCompile Include="tests\tests.cpp" />
     <ClCompile Include="tests\tree-encoding-tests.cpp" />
     <ClCompile Include="tests\type-selection-tests.cpp" />
