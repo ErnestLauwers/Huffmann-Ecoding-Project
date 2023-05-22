@@ -8,36 +8,37 @@ namespace encoding
 {
 	namespace huffman
 	{
-		std::unique_ptr<data::Node<Datum>> decode_tree(Datum nbits, io::InputStream& inputStream)
+		std::unique_ptr<data::Node<Datum>> decode_tree(unsigned bits, io::InputStream& input)
 		{
-			if (inputStream.read() == 0)
+			if (input.read() == 1)
 			{
-				Datum data = io::read_bits(nbits, inputStream);
+				auto left_child = decode_tree(bits, input);
+				auto right_child = decode_tree(bits, input);
 
-				return std::make_unique<data::Leaf<Datum>>(data);
+				auto branch = data::Branch<Datum>(std::move(left_child), std::move(right_child));
+				return std::move(std::make_unique<data::Branch<Datum>>(std::move(branch)));
 			}
 			else
 			{
-				std::unique_ptr<data::Node<Datum>> leftNode = decode_tree(nbits, inputStream);
-				std::unique_ptr<data::Node<Datum>> rightNode = decode_tree(nbits, inputStream);
-				return std::make_unique<data::Branch<Datum>>(std::move(leftNode), std::move(rightNode));
+				auto bits2 = io::read_bits(bits, input);
+				auto leaf = std::make_unique<data::Leaf<Datum>>(bits2);
+
+				return std::move(leaf);
 			}
 		}
 
-		void encode_tree(const data::Node<Datum>& root, Datum size, io::OutputStream& outputStream)
+		void encode_tree(const data::Node<Datum>& root, unsigned bits, io::OutputStream& output)
 		{
-			if (root.isLeaf())
+			if (const auto branch = dynamic_cast<const data::Branch<Datum>*>(&root))
 			{
-				const data::Leaf<Datum>& leaf = dynamic_cast<const data::Leaf<Datum>&>(root);
-				outputStream.write(0);
-				io::write_bits(leaf.get_value(), size, outputStream);
+				io::write_bits(1, 1, output);
+				encode_tree(branch->get_left_child(), bits, output);
+				encode_tree(branch->get_right_child(), bits, output);
 			}
-			else
+			else if (const auto leaf = dynamic_cast<const data::Leaf<Datum>*>(&root))
 			{
-				outputStream.write(1);
-				auto& branch = static_cast<const data::Branch<Datum>&>(root);
-				encode_tree(branch.get_left_child(), size, outputStream);
-				encode_tree(branch.get_right_child(), size, outputStream);
+				io::write_bits(0, 1, output);
+				io::write_bits(leaf->get_value(), bits, output);
 			}
 		}
 	}

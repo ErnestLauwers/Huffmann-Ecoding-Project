@@ -1,28 +1,24 @@
 #include "io/binary-io.h"
-#include <cstdint>
 
-namespace io {
-    uint64_t io::read_bits(unsigned nbits, io::InputStream& input) 
-    {
-        uint64_t bits = 0;
-        unsigned i; 
-        for (i = 0; i < nbits; i++) {
-            Datum datum = input.read();
-            int bit = (datum != 0);
-            bits = (bits << 1) | bit;
-            if (input.end_reached()) {
-                nbits = i + 1;
-                break;
-            }
+u64 io::read_bits(unsigned nbits, io::InputStream& input) {
+    u64 res = 0;
+    while (nbits != 0) {
+        if (!input.end_reached()) {
+            res |= (input.read() << (nbits - 1));
         }
-        bits >>= (nbits - i - 1);
-        return bits;
+        else {
+            res |= 0;
+        }
+        --nbits;
     }
+    return res;
+}
+void io::write_bits(u64 value, unsigned nbits, io::OutputStream& output) {
+    unsigned count = nbits;
 
-    void io::write_bits(u64 value, unsigned nbits, io::OutputStream& output)
-    {
-        for (unsigned i = 0; i < nbits; i++) {
-            output.write((value >> (nbits - i - 1)) & 1);
-        }
+    while (nbits != 0) {
+        output.write((value >> (nbits - 1)) & 1);
+        --count;
+        --nbits;
     }
 }

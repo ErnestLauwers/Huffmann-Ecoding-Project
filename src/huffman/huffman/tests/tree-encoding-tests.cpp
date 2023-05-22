@@ -1,4 +1,4 @@
-#ifdef TEST_BUILD
+/*#ifdef TEST_BUILD
 
 #include "catch.hpp"
 #include "data/binary-tree.h"

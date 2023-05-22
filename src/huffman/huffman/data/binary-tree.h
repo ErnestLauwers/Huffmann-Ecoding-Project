@@ -13,7 +13,6 @@ namespace data
     public:
         virtual ~Node() {}
         virtual const T& get_value() const = 0;
-        virtual bool isLeaf() const { return false; }
     };
 
     template<typename T>
@@ -35,7 +34,6 @@ namespace data
 
         const T& get_value() const override { throw std::logic_error("Branch does not have a value."); }
 
-        bool isLeaf() const override { return false; }
     };
     
     template<typename T>
@@ -48,7 +46,6 @@ namespace data
 
         const T& get_value() const override { return data; }
 
-        bool isLeaf() const override { return true; }
     };
 
     template<typename IN, typename OUT>
