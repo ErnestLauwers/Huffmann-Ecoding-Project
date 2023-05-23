@@ -14,9 +14,9 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    std::string mode = argv[2];
-    std::string input_file_path = argv[3];
-    std::string output_file_path = argv[4];
+    std::string mode = argv[1];
+    std::string input_file_path = argv[2];
+    std::string output_file_path = argv[3];
 
     if (mode == "compress") {
         auto input = io::create_file_data_source(input_file_path);
