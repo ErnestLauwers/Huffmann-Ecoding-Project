@@ -1,6 +1,6 @@
-#include <cstdint>
 #ifndef UTIL_H
 #define UTIL_H
+#include <cstdint>
 
 typedef uint64_t u64;
 typedef uint64_t Datum;
